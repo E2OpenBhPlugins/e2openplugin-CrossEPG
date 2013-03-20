@@ -61,14 +61,27 @@ class CrossEPG_Setup(Screen):
 			self.mountdescription.append(_("Internal flash"))
 			self.mountpoint.append("/var/crossepg/data")
 
-		for partition in harddiskmanager.getMountedPartitions():
-			if (partition.mountpoint != '/') and (partition.mountpoint != '') and self.isMountedInRW(partition.mountpoint):
-				self.mountpoint.append(partition.mountpoint + "/crossepg")
 
-				if partition.description != '':
-					self.mountdescription.append(partition.description)
-				else:
-					self.mountdescription.append(partition.mountpoint)
+#		for partition in harddiskmanager.getMountedPartitions():
+#			if (partition.mountpoint != '/') and (partition.mountpoint != '') and self.isMountedInRW(partition.mountpoint):
+#				self.mountpoint.append(partition.mountpoint + "/crossepg")
+
+#				if partition.description != '':
+#					self.mountdescription.append(partition.description)
+#				else:
+#					self.mountdescription.append(partition.mountpoint)
+
+#Make all mountpoints available
+#by meo
+		f = open("/proc/mounts",'r')
+		for line in f.readlines():
+			parts = line.strip().split()
+			mountp = parts[1]
+			if mountp.find("/media/") != -1:
+				self.mountpoint.append(mountp + "/crossepg")
+				self.mountdescription.append(mountp)			
+		f.close()
+
 				
 		if not self.config.isQBOXHD():		# for other decoders we add internal flash as last entry (it's unsuggested)
 			self.mountdescription.append(_("Internal flash (unsuggested)"))
